@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+# -*- coding: utf-8 -*-
+{ set +x; } 2>/dev/null
+
+usage() {
+    echo "usage: $(basename $0) app ..." 1>&2
+    [[ $1 == "-h" ]] || [[ $1 == "--help" ]]; exit
+}
+
+[[ $1 == "-h" ]] || [[ $1 == "--help" ]] && usage "$@"
+
+[[ $# == 0 ]] && usage
+
+while [[ $# != 0 ]]; do
+    ! [ -e "$1" ] && echo "ERROR: $1 NOT EXISTS" 1>&2 && exit 1
+    defaults write com.apple.dock persistent-apps -array-add "<dict><key>tile-data</key><dict><key>file-data</key><dict><key>_CFURLString</key><string>$1</string><key>_CFURLStringType</key><integer>0</integer></dict></dict></dict>"
+    shift
+done;:

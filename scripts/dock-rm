@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+# -*- coding: utf-8 -*-
+{ set +x; } 2>/dev/null
+
+usage() {
+    echo "usage: $(basename $0) item ..." 1>&2
+    [[ $1 == "-h" ]] || [[ $1 == "--help" ]]; exit
+}
+
+[[ $1 == "-h" ]] || [[ $1 == "--help" ]] && usage "$@"
+
+[[ $# == 0 ]] && usage
+
+plist=~/Library/Preferences/com.apple.dock.plist
+
+while [[ $# != 0 ]]; do
+    dloc="$(defaults read com.apple.dock persistent-apps | grep '"_CFURLString"' | grep -n "$1" | cut -f1 -d:)"
+    [[ -n "$dloc" ]] && {
+        dloc=$[$dloc-1]
+        /usr/libexec/PlistBuddy -c "Delete persistent-apps:$dloc" "$plist"
+    }
+    dloc="$(defaults read com.apple.dock persistent-others | grep '"_CFURLString"' | grep -n "$1" | cut -f1 -d:)"
+    [[ -n "$dloc" ]] && {
+        dloc=$[$dloc-1]
+        /usr/libexec/PlistBuddy -c "Delete persistent-others:$dloc" "$plist"
+    }
+    shift
+done;:
+

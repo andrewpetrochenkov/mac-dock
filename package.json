@@ -1,0 +1,18 @@
+{
+  "name": "mac-dock",
+  "version": "2019.5.10",
+  "description": "macOS Dock scripts",
+  "keywords": [
+    "Dock"
+  ],
+  "homepage": "https://github.com/looking-for-a-job/mac-dock",
+  "license": "Unlicense",
+  "bin": {
+    "dock": "./scripts/dock",
+    "dock-add-app": "./scripts/dock-add-app",
+    "dock-add-folder": "./scripts/dock-add-folder",
+    "dock-apps": "./scripts/dock-apps",
+    "dock-folders": "./scripts/dock-folders",
+    "dock-rm": "./scripts/dock-rm"
+  }
+}

@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+# -*- coding: utf-8 -*-
+{ set +x; } 2>/dev/null
+
+usage() {
+    echo "usage: $(basename $0)" 1>&2
+    [[ $1 == "-h" ]] || [[ $1 == "--help" ]]; exit
+}
+
+[[ $1 == "-h" ]] || [[ $1 == "--help" ]] && usage "$@"
+
+[[ $# != 0 ]] && usage
+
+defaults read com.apple.dock persistent-apps | grep '"_CFURLString"' | awk -F'"' '{print $4}' | php -R 'echo urldecode($argn)."\n";' | sed -e 's/file:\/\///g' | sed -e 's/\/$//g'

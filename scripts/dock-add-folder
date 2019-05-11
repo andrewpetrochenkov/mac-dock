@@ -1,0 +1,59 @@
+#!/usr/bin/env bash
+# -*- coding: utf-8 -*-
+{ set +x; } 2>/dev/null
+
+usage() {
+    echo "usage: $(basename $0) [--arrangement=X][--displayas=Y][--showas=Z] path" 1>&2
+    [[ $1 == "-h" ]] || [[ $1 == "--help" ]]; exit
+}
+
+[[ $1 == "-h" ]] || [[ $1 == "--help" ]] && usage "$@"
+
+[[ $# == 0 ]] && usage
+
+arrangement=1   # 1 - name (default), 2 - added, 3 - modification, 4 - creation, 5 - kind
+displayas=2     # 1 - folder, 2 - stack (default)
+showas=4        # 1 - beep, 2 - grid, 3 - list, 4 - auto (default)
+
+while [[ $# != 1 ]]; do
+    [[ $1 == "--arrangement" ]] && {
+        arrangement="$(echo $1 | awk -F= '{print $2}')"; shift; continue;
+    }
+    [[ $1 == "--displayas" ]] && {
+        displayas="$(echo $1 | awk -F= '{print $2}')"; shift; continue;
+    }
+    [[ $1 == "--showas" ]] && {
+        showas="$(echo $1 | awk -F= '{print $2}')"; shift; continue;
+    }
+    usage
+done
+path="$1"
+label="${1##*}"
+
+tmp="$(mktemp)" || exit
+cat <<EOF > "$tmp"
+<dict>
+    <key>tile-data</key>
+    <dict>
+        <key>file-data</key>
+        <dict>
+            <key>_CFURLString</key>
+            <string>$path</string>
+            <key>_CFURLStringType</key>
+            <integer>0</integer>
+        </dict>
+        <key>file-label</key>
+        <string>$label</string>
+        <key>arrangement</key>
+        <integer>$arrangement</integer>
+        <key>displayas</key>
+        <integer>$displayas</integer>
+        <key>showas</key>
+        <integer>$showas</integer>
+    </dict>
+    <key>tile-type</key>
+    <string>directory-tile</string>
+</dict>
+EOF
+value="$(cat "$tmp")" || exit
+defaults write com.apple.dock persistent-others -array-add "$value"
